@@ -5,6 +5,7 @@ plugins {
   java
   application
   id("com.github.johnrengelman.shadow") version "7.1.2"
+  id("io.ebean") version "13.3.1"
 }
 
 group = "com.Keyush"
@@ -16,6 +17,13 @@ repositories {
 
 val vertxVersion = "4.5.9"
 val junitJupiterVersion = "5.9.1"
+val vertxWebVersion = "4.3.8"
+val ebeanVersion = "12.12.1"
+val queryBeanVersion = "12.12.1"
+val mysqlConnectorVersion = "8.0.28"
+val hikariCPVersion = "4.0.3"
+val logbackVersion = "1.2.11"
+val jaxbApiVersion = "2.3.1"
 
 val mainVerticleName = "com.Keyush.WeatherApiVertx.MainVerticle"
 val launcherClassName = "io.vertx.core.Launcher"
@@ -27,16 +35,23 @@ application {
   mainClass.set(launcherClassName)
 }
 
+
 dependencies {
-  // Vert.x dependencies
-  implementation("io.vertx:vertx-core:$vertxVersion")
-  implementation("io.vertx:vertx-web:$vertxVersion")
-
-  // Ebean ORM dependencies
-  implementation("io.ebean:ebean:13.13.1") // Updated version
-
-  // MySQL JDBC driver
-  implementation("mysql:mysql-connector-java:8.0.33")
+  implementation(platform("io.vertx:vertx-stack-depchain:$vertxVersion"))
+  implementation("io.vertx:vertx-core")
+  implementation("io.vertx:vertx-web:$vertxWebVersion")
+  implementation("io.vertx:vertx-auth-jwt:$vertxVersion")
+  implementation("io.jsonwebtoken:jjwt:0.9.1")
+  implementation("io.ebean:ebean:$ebeanVersion") {
+    exclude(group = "org.slf4j", module = "slf4j-log4j12")
+  }
+  implementation("io.ebean:ebean-querybean:$queryBeanVersion")
+  implementation("mysql:mysql-connector-java:$mysqlConnectorVersion")
+  implementation("com.zaxxer:HikariCP:$hikariCPVersion")
+  implementation("ch.qos.logback:logback-classic:$logbackVersion")
+  implementation("org.slf4j:slf4j-api:1.7.32")
+  implementation("org.projectlombok:lombok:1.18.22")
+  implementation("javax.xml.bind:jaxb-api:$jaxbApiVersion")
 
   // SLF4J and Logback for logging
   implementation("org.slf4j:slf4j-api:2.0.7")
@@ -53,12 +68,10 @@ dependencies {
   // Jackson Databind for JSON processing
   implementation("com.fasterxml.jackson.core:jackson-databind:2.15.1")
 
-  // Vert.x stack dependencies
-  implementation(platform("io.vertx:vertx-stack-depchain:$vertxVersion"))
-  implementation("io.vertx:vertx-core")
   testImplementation("io.vertx:vertx-junit5")
   testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
 }
+
 
 java {
   sourceCompatibility = JavaVersion.VERSION_17
